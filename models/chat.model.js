@@ -1,32 +1,13 @@
 import mongoose from "mongoose";
 import moment from "moment/moment";
 
-const ChatSchema = new mongoose.Schema(
-    {
-        userOne: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: ""
-        },
-        userTwo:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: ""
-        },
-        messages: {
-            type: [MessageSchema],
-            default: []
-        }
-    }
-)
-
 const MessageSchema = new mongoose.Schema(
     {
         sender: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required:true,
-            default:""
+            default: null
         },
         text: {
             type: String,
@@ -41,7 +22,33 @@ const MessageSchema = new mongoose.Schema(
     }
 )
 
-const Chat = mongoose.model('Chat',ChatSchema);
+const chatSchema = new mongoose.Schema(
+    {
+        userOne: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null
+        },
+        userTwo:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null
+        },
+        timestamp: {
+            type: Date,
+            required: true,
+            default: moment().format('YYYY-MM-DD')
+        },
+        messages: {
+            type: [MessageSchema],
+            default: []
+        }
+    }
+)
+
+
+
+const Chat = mongoose.model('Chat',chatSchema);
 
 module.exports = {
     Chat

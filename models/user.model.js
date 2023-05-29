@@ -4,11 +4,6 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const ItemSchema = new mongoose.Schema(
     {
-        product_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Item",
-            default: ""
-        },
         name:{
             type: String,
             required: true,
@@ -35,12 +30,10 @@ const ItemSchema = new mongoose.Schema(
         reserved_by: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            default: ""
         },
-        item_url: {
-            type: String,
-            required: true,
-            default: ""
+        url: {
+          type: String,
+          default: "mercado-express-server"
         },
         date_added: {
             type: Date,

@@ -1,52 +1,30 @@
-import mongoose from "mongoose";
-import moment from "moment/moment";
+const mongoose = require('mongoose');
+const moment = require("moment/moment");
 
-const MessageSchema = new mongoose.Schema(
+const chatSchema = new mongoose.Schema(
     {
         sender: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required:true,
             default: null
         },
-        text: {
-            type: String,
-            required: true,
-            default:""
-        },
-        timestamp: {
-            type: Date,
-            required: true,
-            default: moment().format('YYYY-MM-DD')
-        }
-    }
-)
-
-const chatSchema = new mongoose.Schema(
-    {
-        userOne: {
+        receiver:{
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             default: null
         },
-        userTwo:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: null
+        message: {
+          type: String,
+          required: true,
+          default: ""
         },
         timestamp: {
             type: Date,
             required: true,
-            default: moment().format('YYYY-MM-DD')
+            default: Date.now
         },
-        messages: {
-            type: [MessageSchema],
-            default: []
-        }
     }
 )
-
-
 
 const Chat = mongoose.model('Chat',chatSchema);
 

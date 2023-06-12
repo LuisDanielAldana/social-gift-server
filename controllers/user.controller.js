@@ -19,18 +19,16 @@ async function createUser(req, res){
                 password: password,
             }).save();
             res.status(201).json({
-                message: "User Created",
                 obj: newUser
             })
         } catch (err){
             console.error(err);
             res.status(400).json({
-                message: "Unable to create user",
-                obj: null
+                message: "Unable to create user"
             })
         }
     } else {
-        res.status(406).json({
+        res.status(400).json({
             message: "Some parameters were missing",
             obj: null
         })
@@ -45,7 +43,6 @@ async function findUserById(req, res) {
             {password:0}
         )
         res.status(200).json({
-            message: "User found",
             obj: user
         })
     } catch(e){
@@ -145,41 +142,17 @@ async function updateUser(req, res){
     }
 }
 
-// async function updateUserImage(req, res){
-//     const _id = req.params.userId
-//     const image = req.body.image
-//     try {
-//         const updatedUser = await User.updateOne(
-//             {_id: _id},
-//             {image: image}
-//         )
-//         res.status(200).json({
-//             message: "Image updated successfully",
-//             obj: updatedUser
-//         })
-//     } catch(e){
-//         res.status(400).json({
-//             message: "Unable to update image"
-//         })
-//     }
-// }
-
-// async function searchUser(req, res){
-//     const search = req.body.search
-//     const reg = new RegExp(`.*${search}.*`, 'i');
-//     try{
-//         const users = await User.find({}, {password:0}).or([{ 'name': { $regex: reg }}, { 'lastName': { $regex: reg }}, { 'email': { $regex: reg }}])
-//         res.status(200).json({
-//             message: "All coincidences",
-//             obj: users
-//         })
-//     } catch(e){
-//         res.status(400).json({
-//             message: "Error",
-//             error: e
-//         })
-//     }
-// }
+async function deleteUser(req, res){
+    const _id = req.params.userId
+    try{
+        const deletedUser = await User.deleteOne({
+            _id: _id
+        })
+        res.status(200).json({deletedUser})
+    } catch (e){
+        res.status(400).json({error:e})
+    }
+}
 
 async function getFriends(req, res){
     const _id = req.params.userId
@@ -188,12 +161,12 @@ async function getFriends(req, res){
             {_id:_id},
             {friends:1}).populate({path:"friends", model:"User"})
         res.status(200).json({
-            message: "All friends",
             obj: friends
         })
     } catch(e){
         res.status(400).json({
-            message: "Error"
+            message: "Error",
+            error: e
         })
     }
 }
@@ -233,15 +206,14 @@ async function sendFriendRequest(req, res){
                 {$push:
                         {friend_requests: senderId}}
             )
-            res.status(200).json({
-                message: "Request sent successfully",
+            res.status(201).json({
                 obj: reqReceiver
             })
         }
 
     } catch(e){
         res.status(400).json({
-            message: "Error"
+            error: e
         })
     }
 }
@@ -291,7 +263,6 @@ async function acceptFriendRequest(req, res){
 
     } catch(e){
         res.status(400).json({
-            message: "Error accepting friend request",
             error: e
         })
     }
@@ -362,7 +333,7 @@ async function removeFriends(req, res){
         }
     } catch(e){
         res.status(400).json({
-            message:"Error"
+            error: e
         })
     }
 }
@@ -385,15 +356,29 @@ async function createWishlist(req, res) {
                     }
                     }}
         )
-        res.status(200).json({
+        res.status(201).json({
             message: "New Wishlist created",
             obj: newWishlist
         })
     } catch(e){
         res.status(400).json({
             message: "Can't create Wishlist",
-            obj: null
+            error: e
         })
+    }
+}
+
+async function getAllWishlists(req, res){
+    const userId = req.params.userId;
+    try{
+        const wishlists = await User.findOne({
+            _id: userId
+        }, {
+            wishlists:1
+        })
+        res.status(200).json({obj: wishlists})
+    } catch (e){
+        res.status(400).json({error: e})
     }
 }
 
@@ -406,12 +391,10 @@ async function getWishlistById(req, res){
             {"wishlists.$": 1}
         )
         res.status(200).json({
-            message: "Wishlist",
             obj: wishlist
         })
     } catch (e){
         res.status(400).json({
-            message: "Error getting wishlist",
             error: e
         })
     }
@@ -434,12 +417,11 @@ async function editWishlist(req, res){
             }
         )
         res.status(200).json({
-            message: "Wishlist edited succesfully",
             obj: editedWishlist
         })
     } catch (e){
         res.status(400).json({
-            message: "Error"
+            error: e
         })
     }
 }
@@ -488,13 +470,10 @@ async function addItem(req, res){
             }
         )
         res.status(201).json({
-            message: "Item added",
-            obj: userWishlist,
-            newItem
+            obj: newItem
         })
     } catch (e){
         res.status(400).json({
-            message: "Error adding item",
             error: e
         })
     }
@@ -526,6 +505,18 @@ async function removeItem(req, res){
             message: 'Error removing item from wishlist',
             error: e
         })
+    }
+}
+
+async function deleteWishlist(req, res){
+    const userId = req.params.userId
+    const wishlistId = req.params.wishlistId;
+    try{
+        const deletedWishlist = await User.findByIdAndUpdate(userId,
+            {$pull: { wishlists: {_id: wishlistId}}})
+        res.status(200).json({obj: deletedWishlist})
+    } catch (e){
+        res.status(400).json({error: e})
     }
 }
 
@@ -567,6 +558,7 @@ module.exports = {
     findUserById,
     login,
     updateUser,
+    deleteUser,
     getFriends,
     sendFriendRequest,
     getFriendRequest,
@@ -574,11 +566,13 @@ module.exports = {
     declineFriendRequest,
     removeFriends,
     createWishlist,
+    getAllWishlists,
     getWishlistById,
     editWishlist,
     getWishlistItems,
     addItem,
     removeItem,
+    deleteWishlist,
     modifyPriority
 }
 

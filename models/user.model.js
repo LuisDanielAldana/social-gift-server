@@ -20,7 +20,7 @@ const ItemSchema = new mongoose.Schema(
         image: {
             type: String,
             required: true,
-            default: ""
+            default: "https://res.cloudinary.com/dficrwc6r/image/upload/v1686556387/kraftbox_q5bjep.jpg"
         },
         reserved: {
             type: Boolean,
@@ -61,7 +61,7 @@ const WishlistSchema = new mongoose.Schema(
         image: {
             type: String,
             required: true,
-            default: ""
+            default: "https://res.cloudinary.com/dficrwc6r/image/upload/v1686556063/festive-gift-boxes_g1s86n.jpg"
         },
         created: {
             type: Date,
@@ -104,7 +104,7 @@ const UserSchema = new mongoose.Schema(
         },
         image: {
             type: String,
-            default: ""
+            default: "https://res.cloudinary.com/dficrwc6r/image/upload/v1686555857/profile-icon-design-free-vector_pxltql.jpg"
         },
         friends: {
             type: [mongoose.Schema.Types.ObjectId],

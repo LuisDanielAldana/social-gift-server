@@ -13,6 +13,7 @@ router.post('/', userController.createUser)
 router.get('/:userId', userController.findUserById)
 router.post('/login', userController.login)
 router.put('/:userId', userController.updateUser)
+router.delete('/:userId', userController.deleteUser)
 
 router.use("/:userId/friends", friendsRouter);
 router.use("/:userId/wishlists", wishlistsRouter);

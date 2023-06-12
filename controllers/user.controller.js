@@ -238,18 +238,18 @@ async function acceptFriendRequest(req, res){
         }
 
         else {
-            const removedRequest = await User.updateOne(
+            User.updateOne(
                 {_id: receiver_id},
                 {$pullAll: {
                         friend_requests: [{_id: sender_id}],
                     }}
             )
-            const addedFriendsReceiver = await User.updateOne(
+            await User.updateOne(
                 {_id: receiver_id},
                 {$push:
                         {friends: sender_id}}
             )
-            const addedFriendsSender = await User.updateOne(
+            await User.updateOne(
                 {_id: sender_id},
                 {$push:
                         {friends: receiver_id}}
@@ -362,7 +362,6 @@ async function createWishlist(req, res) {
         })
     } catch(e){
         res.status(400).json({
-            message: "Can't create Wishlist",
             error: e
         })
     }
@@ -533,7 +532,7 @@ async function modifyPriority(req, res){
         item.priority = priority;
         if (oldPriority === priority) {
             await user.save();
-            return res.json({ success: true});
+            return res.status(200).json({ success: true});
         }
         wishlist.items.forEach((otherItem) => {
             if (otherItem._id.toString() !== itemId && otherItem.priority >= priority) {

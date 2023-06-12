@@ -552,6 +552,61 @@ async function modifyPriority(req, res){
     }
 }
 
+async function bookItem(req, res){
+    const userId = req.params.userId
+    const wishlistId = req.params.wishlistId
+    const itemId = req.params.itemId
+    const reservedBy = req.body.reservedBy
+    try{
+        const user = await User.findOne({_id: userId});
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const wishlist = user.wishlists.find((wishlist) => wishlist._id.toString() === wishlistId);
+        if (!wishlist) {
+            return res.status(404).json({ message: 'Wishlist not found'});
+        }
+        const item = wishlist.items.id(itemId);
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        item.reserved = true;
+        item.reserved_by = reservedBy;
+
+        await wishlist.save();
+        res.status(200).json({obj: item})
+    } catch (e){
+        res.status(400).json({error: e})
+    }
+}
+
+async function unbookItem(req, res){
+    const userId = req.params.userId
+    const wishlistId = req.params.wishlistId
+    const itemId = req.params.itemId
+    try{
+        const user = await User.findOne({_id: userId});
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const wishlist = user.wishlists.find((wishlist) => wishlist._id.toString() === wishlistId);
+        if (!wishlist) {
+            return res.status(404).json({ message: 'Wishlist not found'});
+        }
+        const item = wishlist.items.id(itemId);
+        if (!item) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+        item.reserved = false;
+        item.reserved_by = null;
+
+        await wishlist.save();
+        res.status(200).json({obj: item})
+    } catch (e){
+        res.status(400).json({error: e})
+    }
+}
+
 module.exports = {
     getUsers,
     createUser,
@@ -573,6 +628,8 @@ module.exports = {
     addItem,
     removeItem,
     deleteWishlist,
-    modifyPriority
+    modifyPriority,
+    bookItem,
+    unbookItem
 }
 

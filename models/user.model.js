@@ -30,6 +30,7 @@ const ItemSchema = new mongoose.Schema(
         reserved_by: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            default: null
         },
         url: {
           type: String,

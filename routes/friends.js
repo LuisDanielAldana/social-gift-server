@@ -12,3 +12,4 @@ router.put('/:senderId/decline',authController.validateJWT, userController.decli
 router.delete('/:friendId/remove',authController.validateJWT, userController.removeFriends)
 
 module.exports = router
+
